@@ -1,10 +1,15 @@
 {
-	"name": "@nixy/nfc-pcsc",
-	"version": "0.9.0",
+	"name": "@tockawa/nfc-pcsc",
+	"version": "0.9.1",
 	"description": "This version is a remake of pokusew's NFC-PCSC, redesigned for simplified library usage and enhanced with type support.",
 	"main": "dist/commonjs/src/index.js",
+	"module": "dist/esm/src/index.js",
+	"types": "dist/types/src/index.d.ts",
 	"exports": {
-		".": "./esm/src/index.js",
+		".": {
+			"import": "./dist/esm/src/index.js",
+			"require": "./dist/commonjs/src/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"author": {
@@ -30,7 +35,6 @@
 		"test-read": "ts-node-esm --project ./tsconfig.esm.json --files examples/read.ts",
 		"test-basic": "ts-node-esm --project ./tsconfig.esm.json --files examples/basic.ts"
 	},
-	"types": "./src/types/global.d.ts",
 	"files": [
 		"dist",
 		"types"
@@ -38,7 +42,6 @@
 	"engines": {
 		"node": ">=12.0.0"
 	},
-	"type": "module",
 	"keywords": [
 		"arc122",
 		"card",

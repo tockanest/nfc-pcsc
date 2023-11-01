@@ -17,9 +17,6 @@ import {
 import { TAGS, MODES } from "./helpers/TMK";
 import { CardReader } from "./Reader.typings";
 
-//@ts-ignore
-import * as ndef from "@taptrack/ndef";
-
 export default class Reader extends EventEmitter {
 	protected reader: CardReader;
 	private connection?: {
@@ -64,6 +61,7 @@ export default class Reader extends EventEmitter {
 						response.length - 2
 					);
 					if (statusCode === 0x9000) {
+                        console.log(this.card)
 						this.card!.uid = response
 							.subarray(0, response.length - 2)
 							.toString("hex");
@@ -656,36 +654,6 @@ export default class Reader extends EventEmitter {
 		}
 
 		return true;
-	}
-
-	async writeNDEFtoNFC(startingBlockNumber: number, data: string) {
-		try {
-            const { NdefMessage, UriRecord } = ndef;
-			const uriRecord = new UriRecord(data);
-			const ndefMessage = new NdefMessage([uriRecord]);
-			const messageAsUint8Array: Uint8Array = ndefMessage.toByteArray();
-
-			// 2. Convert NDEF message to TLV format.
-			// This is a simplified example; for full NFC tag compatibility, you might need to handle
-			// other TLV structures like Lock Control TLVs, Memory Control TLVs, etc.
-			const NDEF_TLV = 0x03;
-			const TERMINATOR_TLV = 0xfe;
-
-			const tlvLength = messageAsUint8Array.length;
-			let formattedData = new Uint8Array(messageAsUint8Array.length + 3);
-			formattedData[0] = NDEF_TLV;
-			formattedData[1] = tlvLength;
-			formattedData.set(messageAsUint8Array, 2);
-			formattedData[formattedData.length - 1] = TERMINATOR_TLV;
-
-			// 3. Write formatted data using the provided `write` function.
-			await this.write(startingBlockNumber, formattedData);
-		} catch (error) {
-			throw new WriteError(
-				ERRORS.OPERATION_FAILED,
-				`Write operation failed: ${error}`
-			);
-		}
 	}
 
 	public close() {
