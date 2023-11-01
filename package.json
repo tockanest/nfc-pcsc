@@ -1,69 +1,60 @@
 {
-  "name": "nfc-pcsc",
-  "version": "0.8.1",
-  "description": "Easy reading and writing NFC tags and cards",
-  "keywords": [
-    "arc122",
-    "card",
-    "desfire",
-    "mifare",
-    "ndef",
-    "nfc",
-    "pcsc",
-    "pcsclite",
-    "tag",
-    "ultralight"
-  ],
-  "homepage": "https://github.com/pokusew/nfc-pcsc#readme",
-  "bugs": {
-    "url": "https://github.com/pokusew/nfc-pcsc/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pokusew/nfc-pcsc.git"
-  },
-  "license": "MIT",
-  "author": {
-    "name": "Martin Endler",
-    "url": "https://github.com/pokusew"
-  },
-  "contributors": [
-    {
-      "name": "foxxyz",
-      "url": "https://github.com/foxxyz"
-    }
-  ],
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "babel src --out-dir dist",
-    "example": "node -r @babel/register examples/read-write.js",
-    "example-basic": "node -r @babel/register examples/basic.js",
-    "example-from-readme-3": "node -r @babel/register examples/from-readme-3.js",
-    "example-led": "node -r @babel/register examples/led.js",
-    "example-mifare-classic": "node -r @babel/register examples/mifare-classic.js",
-    "example-mifare-desfire": "node -r @babel/register examples/mifare-desfire.js",
-    "example-mifare-ultralight-ntag": "node -r @babel/register examples/mifare-ultralight-ntag.js",
-    "example-ndef": "node -r @babel/register examples/ndef.js",
-    "example-uid-logger": "node -r @babel/register examples/uid-logger.js",
-    "example-without-auto": "node -r @babel/register examples/without-auto.js",
-    "prepack": "yarn build && yarn test",
-    "test": "cross-env NODE_ENV=test ava test/tests.js --verbose"
-  },
-  "dependencies": {
-    "@pokusew/pcsclite": "^0.6.0"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.23.0",
-    "@babel/core": "^7.23.0",
-    "@babel/plugin-syntax-object-rest-spread": "^7.8.3",
-    "@babel/plugin-transform-class-properties": "^7.22.5",
-    "@babel/plugin-transform-modules-commonjs": "^7.23.0",
-    "@babel/register": "^7.22.15",
-    "ava": "^5.3.1",
-    "chalk": "^4.0.0",
-    "cross-env": "^7.0.3",
-    "mock-require": "^3.0.3",
-    "triple-beam": "^1.4.1",
-    "winston": "^3.11.0"
-  }
+	"name": "@nixy/nfc-pcsc",
+	"version": "0.9.0",
+	"description": "This version is a remake of pokusew's NFC-PCSC, redesigned for simplified library usage and enhanced with type support.",
+	"main": "dist/commonjs/src/index.js",
+	"exports": {
+		".": "./esm/src/index.js",
+		"./package.json": "./package.json"
+	},
+	"author": {
+		"name": "Martin Endler",
+		"url": "https://github.com/pokusew"
+	},
+	"contributors": [
+		{
+			"name": "foxxyz",
+			"url": "https://github.com/foxxyz"
+		},
+		{
+			"name": "Nixyan",
+			"url": "https://github.com/tockawaffle"
+		}
+	],
+	"license": "MIT",
+	"scripts": {
+		"build:commonjs": "tsc -p tsconfig.commonjs.json",
+		"build:esm": "tsc -p tsconfig.esm.json",
+		"build": "npm run build:commonjs && npm run build:esm",
+		"test-write": "ts-node-esm --project ./tsconfig.esm.json --files examples/write.ts",
+		"test-read": "ts-node-esm --project ./tsconfig.esm.json --files examples/read.ts",
+		"test-basic": "ts-node-esm --project ./tsconfig.esm.json --files examples/basic.ts"
+	},
+	"types": "./src/types/global.d.ts",
+	"files": [
+		"dist",
+		"types"
+	],
+	"engines": {
+		"node": ">=12.0.0"
+	},
+	"type": "module",
+	"keywords": [
+		"arc122",
+		"card",
+		"desfire",
+		"mifare",
+		"ndef",
+		"nfc",
+		"pcsc",
+		"pcsclite",
+		"tag",
+		"ultralight"
+	],
+	"dependencies": {
+		"@pokusew/pcsclite": "^0.6.0"
+	},
+	"devDependencies": {
+		"@types/node": "^20.8.10"
+	}
 }
