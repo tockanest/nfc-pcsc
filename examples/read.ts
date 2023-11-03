@@ -47,7 +47,8 @@ const { KEY_TYPE_A } = KEYS;
 				// Function to fetch data from a predefined set of blocks on the card.
 				async function fetchData(): Promise<string[]> {
 					// Note that I'm trying to authenticate the blocks in the order 4, 5, 6, 8.
-					// Block 7 is not authenticated because normally it's a sector trailer block, which is used for storing access keys and other metadata.
+					// Block 7 is not authenticated because normally it's a sector trailer block, which is used for storing access keys and other metadata. This on Mifare Classic 1k, you should
+					//check for the documentation on your card for sector blocks and manufacturer blocks.
 					// You can read more about it here: https://github.com/pokusew/nfc-pcsc/issues/16#issuecomment-304989178
 					const blocks = [4, 5, 6, 8];
 					const payloads: string[] = [];
