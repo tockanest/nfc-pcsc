@@ -4,68 +4,67 @@ import ACR122 from "./utils/readers/ACR122";
 import Reader from "./utils/readers/Reader";
 
 type PCSCEvents = {
-    reader: ACR122 | Reader;
-    error: Error;
+	reader: ACR122 | Reader;
+	error: Error;
 };
 
 export type Card = {
-    atr: Buffer;
-    standard: string;
-    uid: string;
-    data?: Buffer;
+	atr: Buffer;
+	standard: string;
+	uid: string;
+	data?: Buffer;
 };
 
-export {
-    Reader,
-    ACR122
-}
+import { KEYS, MODES, TAGS } from "./utils/readers/helpers/TMK";
+export { Reader, ACR122, KEYS, MODES, TAGS };
 
 export default class PCSC extends EventEmitter {
-    private pcsc = pcsc();
+	private pcsc = pcsc();
 
-    constructor() {
-        super();
+	constructor() {
+		super();
 
-        this.pcsc.on("reader", (reader) => {
-            if (
-                reader.name.toLowerCase().indexOf("acr122") !== -1 ||
-                reader.name.toLowerCase().indexOf("acr125") !== -1
-            ) {
-                const device = new ACR122(reader);
-                this.emit("reader", device);
-                return;
-            }
+		this.pcsc.on("reader", (reader) => {
+			if (
+				reader.name.toLowerCase().indexOf("acr122") !== -1 ||
+				reader.name.toLowerCase().indexOf("acr125") !== -1
+			) {
+				const device = new ACR122(reader);
+				this.emit("reader", device);
+				return;
+			}
 
-            const device = new Reader(reader);
-            this.emit("reader", device);
-        });
+			const device = new Reader(reader);
+			this.emit("reader", device);
+		});
 
-        this.pcsc.on("error", (err) => {
-            this.emit("error", err);
-        });
-    }
+		this.pcsc.on("error", (err) => {
+			this.emit("error", err);
+		});
+	}
 
-    on<K extends keyof PCSCEvents>(
-        event: K,
-        listener: (v: PCSCEvents[K]) => void
-    ): this {
-        return super.on(event, listener);
-    }
+	on<K extends keyof PCSCEvents>(
+		event: K,
+		listener: (v: PCSCEvents[K]) => void
+	): this {
+		return super.on(event, listener);
+	}
 
-    emit<K extends keyof PCSCEvents>(event: K, arg: PCSCEvents[K]): boolean {
-        return super.emit(event, arg);
-    }
+	emit<K extends keyof PCSCEvents>(event: K, arg: PCSCEvents[K]): boolean {
+		return super.emit(event, arg);
+	}
 
-    get readers() {
-        //@ts-ignore: This does exist, but it's not in the typings for some reason
-        return this.pcsc.readers;
-    }
+	get readers() {
+		//@ts-ignore: This does exist, but it's not in the typings for some reason
+		return this.pcsc.readers;
+	}
 
-    close() {
-        console.log("Closing PCSC");
-        this.pcsc.close();
-    }
+	close() {
+		try {
+			this.pcsc.close();
+			return true;
+		} catch (error: any) {
+			throw new Error(error.message);
+		}
+	}
 }
-
-import { KEYS, MODES, TAGS } from "./utils/readers/helpers/TMK";
-export { KEYS, MODES, TAGS };

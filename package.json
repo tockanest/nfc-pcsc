@@ -1,13 +1,13 @@
 {
 	"name": "@tockawa/nfc-pcsc",
-	"version": "0.9.1",
+	"version": "0.9.2",
 	"description": "This version is a remake of pokusew's NFC-PCSC, redesigned for simplified library usage and enhanced with type support.",
 	"main": "dist/commonjs/src/index.js",
-	"module": "dist/esm/src/index.js",
+	"module": "dist/esm/src/index.mjs",
 	"types": "dist/types/src/index.d.ts",
 	"exports": {
 		".": {
-			"import": "./dist/esm/src/index.js",
+			"import": "./dist/esm/src/index.mjs",
 			"require": "./dist/commonjs/src/index.js"
 		},
 		"./package.json": "./package.json"
@@ -26,14 +26,23 @@
 			"url": "https://github.com/tockawaffle"
 		}
 	],
+	"homepage": "https://github.com/tockawaffle/nfc-pcsc",
+	"bugs": {
+		"url": "https://github.com/tockawaffle/nfc-pcsc/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/tockawaffle/nfc-pcsc.git"
+	},
 	"license": "MIT",
 	"scripts": {
 		"build:commonjs": "tsc -p tsconfig.commonjs.json",
 		"build:esm": "tsc -p tsconfig.esm.json",
-		"build": "npm run build:commonjs && npm run build:esm",
-		"test-write": "ts-node-esm --project ./tsconfig.esm.json --files examples/write.ts",
-		"test-read": "ts-node-esm --project ./tsconfig.esm.json --files examples/read.ts",
-		"test-basic": "ts-node-esm --project ./tsconfig.esm.json --files examples/basic.ts"
+		"build": "npm run build:commonjs && npm run build:esm && npm run postbuild",
+		"test:write": "ts-node-esm --project ./tsconfig.esm.json --files examples/test.cts",
+		"test:read": "ts-node-esm --project ./tsconfig.esm.json --files examples/read.ts",
+		"test:basic": "ts-node-esm --project ./tsconfig.esm.json --files examples/basic.ts",
+        "postbuild": "node rename-extensions.js dist/esm .js .mjs"
 	},
 	"files": [
 		"dist",

@@ -61,7 +61,7 @@ export default class Reader extends EventEmitter {
 						response.length - 2
 					);
 					if (statusCode === 0x9000) {
-                        console.log(this.card)
+						console.log(this.card);
 						this.card!.uid = response
 							.subarray(0, response.length - 2)
 							.toString("hex");
@@ -211,7 +211,7 @@ export default class Reader extends EventEmitter {
 					protocol:
 						mode === MODES.DIRECT
 							? 0
-							: //@ts-ignore
+							: //@ts-ignore: Property 'SCARD_PROTOCOL_UNDEFINED' does not exist on type 'CardReader'. It is being used on the original library though, so I'll keep it.
 							  this.reader.SCARD_PROTOCOL_UNDEFINED,
 				},
 				(err, protocol) => {
