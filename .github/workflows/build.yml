@@ -2,20 +2,23 @@ name: Build
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
-  workflow_dispatch:  # This line enables manual triggering of the workflow
+    branches: [ main ]
+  workflow_dispatch:  # This enables manual triggering of the workflow
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [14.x, 16.x, 18.x] # Specify the Node.js versions you want to test against
+        os: [ ubuntu-latest, windows-latest, macOS-latest ]
+        node-version: [ 14.x, 16.x, 18.x ]  # Updated Node.js versions
+        exclude:
+          # Exclude certain OS and Node.js version combinations if necessary
+          # Add any excludes here if needed
 
     steps:
       - uses: actions/checkout@v3
@@ -26,10 +29,14 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install pcsclite
+        run: sudo apt-get install -y libpcsclite1 libpcsclite-dev pcscd
+        if: matrix.os == 'ubuntu-latest'
 
-      - name: Build
+      - name: Install dependencies
+        run: npm install --verbose
+
+      - name: Build dist
         run: npm run build
 
       - name: Check files
@@ -38,3 +45,4 @@ jobs:
             ls dist/commonjs
             echo "ESM files:"
             ls dist/esm
+        # This step replaces the original test steps, as per your build.yml
