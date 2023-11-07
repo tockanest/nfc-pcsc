@@ -42,7 +42,7 @@
 		"test:write": "ts-node-esm --project ./tsconfig.esm.json --files examples/test.cts",
 		"test:read": "ts-node-esm --project ./tsconfig.esm.json --files examples/read.ts",
 		"test:basic": "ts-node-esm --project ./tsconfig.esm.json --files examples/basic.ts",
-        "postbuild": "node rename-extensions.js dist/esm .js .mjs"
+		"postbuild": "node rename-extensions.js dist/esm .js .mjs"
 	},
 	"files": [
 		"dist",
@@ -67,6 +67,7 @@
 		"@pokusew/pcsclite": "^0.6.0"
 	},
 	"devDependencies": {
-		"@types/node": "^20.8.10"
+		"@types/node": "^20.8.10",
+		"typescript": "^5.2.2"
 	}
 }

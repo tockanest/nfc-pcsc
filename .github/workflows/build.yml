@@ -28,7 +28,15 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
 
-            - name: Install pcsclite
+            - name: Install Typescript globally
+              run: npm install -g typescript
+              if: matrix.os == 'windows-latest'
+
+            - name: Install Xcode Command Line Tools
+              run: xcode-select --install || true
+              if: matrix.os == 'macOS-latest'
+
+            - name: Install pcsclite dependencies on Ubuntu
               run: sudo apt-get install -y libpcsclite1 libpcsclite-dev pcscd
               if: matrix.os == 'ubuntu-latest'
 
@@ -44,3 +52,8 @@ jobs:
                   ls dist/commonjs
                   echo "ESM files:"
                   ls dist/esm
+                  echo "Number of CommonJS files:"
+                  ls -1 dist/commonjs | wc -l
+                  echo "Number of ESM files:"
+                  ls -1 dist/esm | wc -l
+              shell: bash
