@@ -16,29 +16,32 @@ jobs:
             matrix:
                 os: [ubuntu-latest, windows-latest, macOS-latest]
                 node-version: [14.x, 16.x, 18.x, 20.x]
-                exclude:
-                    - os: windows-latest
-                      node-version: 14.x
 
         steps:
             - uses: actions/checkout@v4
 
-            - name: Use Node.js ${{ matrix.node-version }}
+            - name: Set up Python 3.9 for Node.js v14 on macOS
+              if: matrix.os == 'macOS-latest' && matrix.node-version == '14.x'
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.9"
+
+            - name: Set up Node.js
               uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
 
-            - name: Install Typescript globally
-              run: npm install -g typescript
-              if: matrix.os == 'windows-latest'
+            - name: Update node-gyp for Node.js v14 on macOS
+              if: matrix.os == 'macOS-latest' && matrix.node-version == '14.x'
+              run: npm install -g node-gyp@latest
 
-            - name: Install Xcode Command Line Tools
-              run: xcode-select --install || true
-              if: matrix.os == 'macOS-latest'
+            - name: Install distutils for Node.js v20 on macOS
+              if: matrix.os == 'macOS-latest' && matrix.node-version == '20.x'
+              run: brew install python3 && echo "export PATH=\"/usr/local/opt/python/libexec/bin:$PATH\"" >> $GITHUB_ENV
 
-            - name: Install pcsclite dependencies on Ubuntu
-              run: sudo apt-get install -y libpcsclite1 libpcsclite-dev pcscd
+            - name: Install pcsclite
               if: matrix.os == 'ubuntu-latest'
+              run: sudo apt-get install -y libpcsclite1 libpcsclite-dev pcscd
 
             - name: Install dependencies
               run: npm install
@@ -50,10 +53,9 @@ jobs:
               run: |
                   echo "CommonJS files:"
                   ls dist/commonjs
+                  echo "Number of CommonJS files:"
+                  ls dist/commonjs | wc -l
                   echo "ESM files:"
                   ls dist/esm
-                  echo "Number of CommonJS files:"
-                  ls -1 dist/commonjs | wc -l
                   echo "Number of ESM files:"
-                  ls -1 dist/esm | wc -l
-              shell: bash
+                  ls dist/esm | wc -l
