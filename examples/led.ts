@@ -1,17 +1,18 @@
 "use strict";
 
 // #############
-// Example: Reading data from NFC cards
-// - Compatible with any PC/SC card reader.
-// - Aimed at reading data from cards like MIFARE Classic but should be adaptable to many others.
+// Example: Using the LED with a custom buzzer pattern on the ACR122U NFC reader.
+// - Compatible with ACR122U and ACR1252U (Needs to be tested on other readers).
 // - Covered in this example:
 //   - Initializing the NFC reader.
 //   - Detecting when a card is in proximity.
-//   - Authenticating and reading specific blocks from the card.
+//   - Authenticating (Might not be needed.) and reading specific blocks from the card.
+//   - Setting the LED color and buzzer pattern.
+//   - Closing the reader.
 // - Important: This example demonstrates reading from the card, not writing.
 // #############
 
-import PCSC, { KEYS, Card } from "../src";
+import PCSC, { KEYS, Card, ACR122 } from "../src";
 
 // Extract the KEY_TYPE_A constant from the KEYS module, which represents the type A authentication key.
 const { KEY_TYPE_A } = KEYS;
@@ -60,15 +61,33 @@ const { KEY_TYPE_A } = KEYS;
 					return payloads;
 				}
 
+				//This is the function that sets the LED color and buzzer pattern, there is a JSDoc with it to explain the parameters.
+				//This is only tested with ACR122U, so it might not work (most likely) with other readers.
+				//Set the reader to the ACR122U Type if you want to use this function.
+
+				//Check for the JSDoc on the function for more information on which LED you want to use that are preset.
+				//Also check https://github.com/tockawaffle/nfc-pcsc/blob/master/src/utils/readers/docs/ACR122-LED.MD for more information on the LED Control.
+				(reader as ACR122).ledControl("SUCCESS_MULTIPLE");
+				//You can also set a custom Buzzer pattern, check the JSDoc for more information.
+				//@TODO: "Rework" the LED Control to accept a custom LED/Buzzer pattern.
+				// (reader as ACR122).ledControl("SUCCESS", [0x01, 0x00, 0x01, 0x00])
+
 				console.log("Payload", await fetchData());
-				reader.close(); // Close the reader after reading the necessary data.
+
+				// Close the reader after reading the necessary data.
+				// Not closing the reader might give you trouble if you're using "on" instead of "once" for the event listener.
+				reader.close();
 			} catch (error) {
+				//This is another example on how you can use the LED Control, to indicate that there was an error.
+				(reader as ACR122).ledControl("FATAL_ERROR");
+
 				console.log("Authentication error", error);
 			}
 		});
 
 		// Set up an event listener for handling errors related to the reader.
 		reader.on("error", (err) => {
+			(reader as ACR122).ledControl("FATAL_ERROR");
 			console.log("Error", err);
 		});
 	});

@@ -3,7 +3,7 @@
 // #############
 // Example: Writing data to NFC cards
 // - Compatible with any PC/SC card reader.
-// - Primarily demonstrates how to write data to NFC cards like MIFARE Ultralight.
+// - Primarily demonstrates how to write data to NFC cards like MIFARE Classic.
 // - What is covered in this example:
 //   - Initializing the NFC reader.
 //   - Detecting when a card is in proximity.

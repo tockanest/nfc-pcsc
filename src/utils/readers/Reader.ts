@@ -16,6 +16,15 @@ import {
 
 import { TAGS, MODES } from "./helpers/TMK";
 import { CardReader } from "./Reader.typings";
+import { Card } from "../..";
+
+type ReaderEvents = {
+	card: Card;
+	"card.on": Card;
+	"card.off": Card;
+	error: Error;
+	end: void;
+};
 
 export default class Reader extends EventEmitter {
 	protected reader: CardReader;
@@ -36,6 +45,20 @@ export default class Reader extends EventEmitter {
 		"0": null,
 		"1": null,
 	};
+
+	on<K extends keyof ReaderEvents>(
+		event: K,
+		listener: (v: ReaderEvents[K]) => void
+	): this {
+		return super.on(event, listener);
+	}
+
+	emit<K extends keyof ReaderEvents>(
+		event: K,
+		arg: ReaderEvents[K]
+	): boolean {
+		return super.emit(event, arg);
+	}
 
 	static selectStandardByAtr(atr: Buffer) {
 		return atr[5] === 0x4f ? TAGS.ISO_14443_3 : TAGS.ISO_14443_4;
@@ -65,7 +88,7 @@ export default class Reader extends EventEmitter {
 						this.card!.uid = response
 							.subarray(0, response.length - 2)
 							.toString("hex");
-						this.emit("card", { ...this.card });
+						this.emit("card", { ...this.card! });
 					} else {
 						this.emitError(
 							new GetUIDError(
@@ -110,7 +133,7 @@ export default class Reader extends EventEmitter {
 					);
 					if (statusCode === 0x9000) {
 						this.emit("card", {
-							...this.card,
+							...this.card!,
 							data: response.subarray(0, response.length - 2),
 						});
 					} else {
@@ -182,7 +205,7 @@ export default class Reader extends EventEmitter {
 						return;
 					}
 					this.connection = { protocol };
-					this.emit("card.on", { ...this.card });
+					this.emit("card.on", { ...this.card! });
 					this.card!.standard === TAGS.ISO_14443_3
 						? this.processIso14443_3Tag()
 						: this.processIso14443_4Tag();
@@ -190,7 +213,7 @@ export default class Reader extends EventEmitter {
 			}
 		});
 		this.reader.on("end", () => {
-			this.emit("end");
+			this.emit("end", undefined);
 		});
 	}
 

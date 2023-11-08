@@ -11,7 +11,7 @@ type PCSCEvents = {
 export type Card = {
 	atr: Buffer;
 	standard: string;
-	uid: string;
+	uid?: string;
 	data?: Buffer;
 };
 

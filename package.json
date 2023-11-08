@@ -1,6 +1,6 @@
 {
 	"name": "@tockawa/nfc-pcsc",
-	"version": "0.9.2",
+	"version": "0.9.3",
 	"description": "This version is a remake of pokusew's NFC-PCSC, redesigned for simplified library usage and enhanced with type support.",
 	"main": "dist/commonjs/src/index.js",
 	"module": "dist/esm/src/index.mjs",
@@ -34,6 +34,7 @@
 		"type": "git",
 		"url": "https://github.com/tockawaffle/nfc-pcsc.git"
 	},
+	"readme": "README.md",
 	"license": "MIT",
 	"scripts": {
 		"build:commonjs": "tsc -p tsconfig.commonjs.json",
@@ -45,8 +46,7 @@
 		"postbuild": "node rename-extensions.js dist/esm .js .mjs"
 	},
 	"files": [
-		"dist",
-		"types"
+		"dist"
 	],
 	"engines": {
 		"node": ">=12.0.0"

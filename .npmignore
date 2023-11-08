@@ -3,3 +3,7 @@ node_modules
 tests
 examples
 .github
+rename-extensions.js
+tsconfig.base.json
+tsconfig.commonjs.json
+tsconfig.esm.json
