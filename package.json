@@ -40,6 +40,7 @@
 		"build:commonjs": "tsc -p tsconfig.commonjs.json",
 		"build:esm": "tsc -p tsconfig.esm.json",
 		"build": "npm run build:commonjs && npm run build:esm && npm run postbuild",
+		"test": "tsc -p tsconfig.test.json && node --test dist/test/tests/Reader.test.js",
 		"test:write": "ts-node-esm --project ./tsconfig.esm.json --files examples/test.cts",
 		"test:read": "ts-node-esm --project ./tsconfig.esm.json --files examples/read.ts",
 		"test:basic": "ts-node-esm --project ./tsconfig.esm.json --files examples/basic.ts",
@@ -49,7 +50,7 @@
 		"dist"
 	],
 	"engines": {
-		"node": ">=12.0.0"
+		"node": ">=18.0.0 <22.0.0"
 	},
 	"keywords": [
 		"arc122",

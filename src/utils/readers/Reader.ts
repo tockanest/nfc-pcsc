@@ -18,7 +18,7 @@ import { TAGS, MODES } from "./helpers/TMK";
 import { CardReader } from "./Reader.typings";
 import { Card } from "../..";
 
-type Aid = Buffer | ((card: Card) => Buffer | string);
+type Aid = Buffer | string | ((card: Card) => Buffer | string);
 
 type ReaderEvents = {
 	card: Card;
@@ -115,9 +115,7 @@ export default class Reader extends EventEmitter {
 		if (!this.card || !this.connection) return;
 
 		if (!this.aid) {
-			this.emitError(
-				new Error("Cannot process ISO 14443-4 tag because AID was not set.")
-			);
+			this.emit("card", { ...this.card });
 			return;
 		}
 
