@@ -18,6 +18,8 @@ import { TAGS, MODES } from "./helpers/TMK";
 import { CardReader } from "./Reader.typings";
 import { Card } from "../..";
 
+type Aid = Buffer | ((card: Card) => Buffer | string);
+
 type ReaderEvents = {
 	card: Card;
 	"card.on": Card;
@@ -38,7 +40,8 @@ export default class Reader extends EventEmitter {
 		uid?: string;
 		data?: Buffer;
 	} | null;
-	private _aid?: Buffer | Function | string;
+	public autoProcessing = true;
+	private _aid?: Aid;
 	private keyStorage: {
 		[key: number]: any;
 	} = {
@@ -84,7 +87,6 @@ export default class Reader extends EventEmitter {
 						response.length - 2
 					);
 					if (statusCode === 0x9000) {
-						console.log(this.card);
 						this.card!.uid = response
 							.subarray(0, response.length - 2)
 							.toString("hex");
@@ -110,9 +112,18 @@ export default class Reader extends EventEmitter {
 	}
 
 	private async processIso14443_4Tag() {
-		if (!this.card || !this.connection || !this.aid) return;
-		const aid =
-			typeof this.aid === "function" ? this.aid(this.card) : this.aid;
+		if (!this.card || !this.connection) return;
+
+		if (!this.aid) {
+			this.emitError(
+				new Error("Cannot process ISO 14443-4 tag because AID was not set.")
+			);
+			return;
+		}
+
+		const aid = this.getAidBuffer(this.card);
+		if (!aid) return;
+
 		const packet = Buffer.from([
 			0x00,
 			0xa4,
@@ -124,9 +135,20 @@ export default class Reader extends EventEmitter {
 		]);
 		this.reader.transmit(
 			packet,
-			packet.length,
+			40,
 			this.connection.protocol,
 			(err, response) => {
+				if (err) {
+					this.emitError(
+						new TransmitError(
+							ERRORS.FAILURE,
+							"An error occurred while transmitting.",
+							err
+						)
+					);
+					return;
+				}
+
 				if (response && response.length >= 2) {
 					const statusCode = response.readUInt16BE(
 						response.length - 2
@@ -136,6 +158,14 @@ export default class Reader extends EventEmitter {
 							...this.card!,
 							data: response.subarray(0, response.length - 2),
 						});
+					} else if (statusCode === 0x6a82) {
+						this.emitError(
+							new Error(
+								`Not found response. Tag not compatible with AID ${aid
+									.toString("hex")
+									.toUpperCase()}.`
+							)
+						);
 					} else {
 						this.emitError(new Error(`Response status error.`));
 					}
@@ -148,6 +178,21 @@ export default class Reader extends EventEmitter {
 				}
 			}
 		);
+	}
+
+	private getAidBuffer(card: Card): Buffer | undefined {
+		const aid = typeof this.aid === "function" ? this.aid(card) : this.aid;
+
+		if (Buffer.isBuffer(aid)) {
+			return aid;
+		}
+
+		if (typeof aid === "string") {
+			return Buffer.from(aid, "hex");
+		}
+
+		this.emitError(new Error("AID must be a HEX string or an instance of Buffer."));
+		return undefined;
 	}
 
 	private emitError(error: Error) {
@@ -206,6 +251,10 @@ export default class Reader extends EventEmitter {
 					}
 					this.connection = { protocol };
 					this.emit("card.on", { ...this.card! });
+					if (!this.autoProcessing) {
+						this.emit("card", { ...this.card! });
+						return;
+					}
 					this.card!.standard === TAGS.ISO_14443_3
 						? this.processIso14443_3Tag()
 						: this.processIso14443_4Tag();
