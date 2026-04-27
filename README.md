@@ -332,6 +332,32 @@ You can find more examples, or the examples above in the examples folder:
 
 Also, there are some good examples on how to use this library in the [@pokeusew/nfc-pcsc](https://github.com/pokusew/nfc-pcsc) repository, it's pretty much the same thing, but be careful with types, as this library uses TypeScript and the other one doesn't.
 
+## Hardware tests
+
+The default `npm test` command uses mocked PC/SC readers. If you have an ACR122U reader, you can also run the opt-in hardware test:
+
+```sh
+NFC_HARDWARE_TEST=1 npm run test:hardware
+```
+
+The hardware test has two cases:
+
+-   Place a MIFARE Classic tag on the reader to authenticate, read, write, and read back one block.
+-   Hold an unlocked Android HCE phone to the reader to select an AID and optionally exchange an APDU.
+
+Available environment variables:
+
+-   `NFC_READER_NAME` defaults to `ACR122`
+-   `NFC_HARDWARE_TIMEOUT_MS` defaults to `30000`
+-   `NFC_MIFARE_KEY` defaults to `FFFFFFFFFFFF`
+-   `NFC_MIFARE_BLOCK` defaults to `4`
+-   `NFC_MIFARE_WRITE_TEXT` defaults to `nfc-pcsc hw test`
+-   `NFC_PHONE_AID` defaults to `F222222222`
+-   `NFC_PHONE_COMMAND` optional hex APDU sent after AID selection
+-   `NFC_PHONE_RESPONSE_MAX_LENGTH` defaults to `256`
+
+Use a writable data block for `NFC_MIFARE_BLOCK`; do not point it at a sector trailer block.
+
 ## F.A.Q.
 
 ### How do I use this library with TypeScript?
