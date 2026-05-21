@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "DevSweep",
+  "version": "0.1.0",
+  "identifier": "dev.devsweep.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "DevSweep — Reclaim your disk",
+        "width": 1180,
+        "height": 760,
+        "minWidth": 880,
+        "minHeight": 580,
+        "decorations": true,
+        "transparent": false,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "category": "DeveloperTool",
+    "shortDescription": "Reclaim disk space by sweeping away node_modules, target/, .venv, …",
+    "longDescription": "DevSweep is a cross-platform desktop app (and CLI) that recursively scans your project directories and lets you delete large build/dependency folders such as node_modules, target, .venv, build, dist, .next, .nuxt, .gradle, Pods and more."
+  }
+}

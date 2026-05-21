@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.vite/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/WixTools/
+*.log
+.DS_Store

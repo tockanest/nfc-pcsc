@@ -7,3 +7,4 @@ rename-extensions.js
 tsconfig.base.json
 tsconfig.commonjs.json
 tsconfig.esm.json
+devsweep
